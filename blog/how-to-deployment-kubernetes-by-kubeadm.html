@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>如何使用 Kubeadm 部署 Kubernetes | Taizeng Wu</title>
+    <meta name="description" content="Welcome to the personal blog">
+    
+    
+    <link rel="preload" href="/assets/css/0.styles.de4e7f6b.css" as="style"><link rel="preload" href="/assets/js/app.a6fc3afd.js" as="script"><link rel="preload" href="/assets/js/2.49a26912.js" as="script"><link rel="preload" href="/assets/js/7.94a4b1d0.js" as="script"><link rel="prefetch" href="/assets/js/3.3f88c4db.js"><link rel="prefetch" href="/assets/js/4.72da107e.js"><link rel="prefetch" href="/assets/js/5.c18b91d2.js"><link rel="prefetch" href="/assets/js/6.260fd42b.js"><link rel="prefetch" href="/assets/js/8.45002ef2.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.de4e7f6b.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container no-sidebar"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">Taizeng Wu</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">Home</a></div><div class="nav-item"><a href="https://github.com/wutz" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Github
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://twitter.com/wutaizeng" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Twitter
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">Home</a></div><div class="nav-item"><a href="https://github.com/wutz" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Github
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://twitter.com/wutaizeng" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Twitter
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav>  <!----> </aside> <main class="page"> <div class="content default"><h1 id="如何使用-kubeadm-部署-kubernetes"><a href="#如何使用-kubeadm-部署-kubernetes" aria-hidden="true" class="header-anchor">#</a> 如何使用 Kubeadm 部署 Kubernetes</h1> <h2 id="本指南特点"><a href="#本指南特点" aria-hidden="true" class="header-anchor">#</a> 本指南特点</h2> <ul><li>基于 Kubernetes 1.13.1</li> <li>负载均衡使用 HAProxy 和 KeepAlived</li> <li>支持 HA</li> <li>POD 网络使用 Flannel host-gw</li> <li>使用 etcd stacked 布局</li> <li>各个环节均使用国内镜像加速</li></ul> <h2 id="准备"><a href="#准备" aria-hidden="true" class="header-anchor">#</a> 准备</h2> <ul><li>硬件：2G RAW, 2 CPUs</li> <li>网络：私有网络连接所有节点</li> <li>OS: CentOS 7</li> <li>SWAP：关闭</li></ul> <table><thead><tr><th style="text-align:left;">节点</th> <th style="text-align:left;">IP</th> <th style="text-align:left;">角色</th></tr></thead> <tbody><tr><td style="text-align:left;">-</td> <td style="text-align:left;">172.17.8.100</td> <td style="text-align:left;">LB VIP</td></tr> <tr><td style="text-align:left;">m1</td> <td style="text-align:left;">172.17.8.101</td> <td style="text-align:left;">k8s master + etcd + LB</td></tr> <tr><td style="text-align:left;">m2</td> <td style="text-align:left;">172.17.8.102</td> <td style="text-align:left;">k8s master + etcd + LB</td></tr> <tr><td style="text-align:left;">m3</td> <td style="text-align:left;">172.17.8.103</td> <td style="text-align:left;">k8s master + etcd + LB</td></tr> <tr><td style="text-align:left;">w1</td> <td style="text-align:left;">172.17.8.111</td> <td style="text-align:left;">k8s worker</td></tr> <tr><td style="text-align:left;">w2</td> <td style="text-align:left;">172.17.8.112</td> <td style="text-align:left;">k8s worker</td></tr></tbody></table> <h2 id="安装-runtime"><a href="#安装-runtime" aria-hidden="true" class="header-anchor">#</a> 安装 Runtime</h2> <blockquote><p>使用 Docker CE 18.06</p></blockquote> <p>所有 Master + Worker 节点安装 Docker</p> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment">## 添加 Docker 仓库</span>
+<span class="token function">wget</span> -O /etc/yum.repos.d/docker-ce.repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+<span class="token function">sed</span> -i <span class="token string">'s+download.docker.com+mirrors.aliyun.com/docker-ce+'</span> /etc/yum.repos.d/docker-ce.repo
+
+<span class="token comment">## 安装 Docker</span>
+yum <span class="token function">install</span> -y docker-ce-18.06.1.ce
+
+<span class="token comment">## 配置 Docker daemon</span>
+<span class="token function">mkdir</span> /etc/docker
+<span class="token function">cat</span> <span class="token operator">&gt;</span> /etc/docker/daemon.json <span class="token operator">&lt;&lt;</span><span class="token string">EOF
+{
+  &quot;live-restore&quot;: true,
+  &quot;bridge&quot;: &quot;none&quot;,
+  &quot;iptables&quot;: false,
+  &quot;registry-mirrors&quot;: [&quot;https://yjgetdw3.mirror.aliyuncs.com&quot;],
+  &quot;exec-opts&quot;: [&quot;native.cgroupdriver=systemd&quot;],
+  &quot;log-driver&quot;: &quot;json-file&quot;,
+  &quot;log-opts&quot;: {
+    &quot;max-size&quot;: &quot;100m&quot;
+  },
+  &quot;storage-driver&quot;: &quot;overlay2&quot;,
+  &quot;storage-opts&quot;: [
+    &quot;overlay2.override_kernel_check=true&quot;
+  ]
+}
+EOF</span>
+
+<span class="token comment"># 使配置生效</span>
+systemctl <span class="token function">enable</span> docker.service <span class="token operator">&amp;&amp;</span> systemctl restart docker
+</code></pre></div><h2 id="安装部署-kubernetes-基础组件"><a href="#安装部署-kubernetes-基础组件" aria-hidden="true" class="header-anchor">#</a> 安装部署 Kubernetes 基础组件</h2> <blockquote><p>包含 kubeadm, kubelet 和 kubectl</p></blockquote> <p>在所有 Master + Worker 节点完成以下安装配置</p> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment">## 配置 Kubernetes 仓库</span>
+<span class="token function">cat</span> <span class="token operator">&lt;&lt;</span>EOF <span class="token operator">&gt;</span> /etc/yum.repos.d/kubernetes.repo
+<span class="token punctuation">[</span>kubernetes<span class="token punctuation">]</span>
+name<span class="token operator">=</span>Kubernetes
+baseurl<span class="token operator">=</span>https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
+enabled<span class="token operator">=</span>1
+gpgcheck<span class="token operator">=</span>1
+repo_gpgcheck<span class="token operator">=</span>1
+gpgkey<span class="token operator">=</span>https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
+exclude<span class="token operator">=</span>kube*
+EOF
+
+<span class="token comment"># 关闭 SELINUX</span>
+setenforce 0
+<span class="token function">sed</span> -i <span class="token string">'s/^SELINUX=enforcing$/SELINUX=disabled/'</span> /etc/selinux/config
+
+<span class="token comment">## 安装组件</span>
+yum <span class="token function">install</span> -y kubelet kubeadm kubectl --disableexcludes<span class="token operator">=</span>kubernetes
+
+<span class="token comment">## 启动 kubelet</span>
+systemctl <span class="token function">enable</span> kubelet <span class="token operator">&amp;&amp;</span> systemctl start kubelet
+
+<span class="token comment">## 如果此时查看 kubelet 状态报告 failed to load Kubelet config file /var/lib/kubelet/config.yaml,</span>
+<span class="token comment">## 这个是正常的，这个文件会在后 kubeadm init 生成</span>
+</code></pre></div><blockquote><p>在 CentOS/RHEL 7 下存在路由不正确的问题，需要配置如下</p></blockquote> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token function">cat</span> <span class="token operator">&lt;&lt;</span> EOF <span class="token operator">&gt;</span> /etc/modules-load.d/br_netfilter.conf
+br_netfilter
+EOF
+<span class="token function">cat</span> <span class="token operator">&lt;&lt;</span>EOF <span class="token operator">&gt;</span>  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables <span class="token operator">=</span> 1
+net.bridge.bridge-nf-call-iptables <span class="token operator">=</span> 1
+EOF
+sysctl --system
+</code></pre></div><h2 id="为-kube-apiserver-配置-lb"><a href="#为-kube-apiserver-配置-lb" aria-hidden="true" class="header-anchor">#</a> 为 kube-apiserver 配置 LB</h2> <blockquote><p>使用 haproxy + keepalived</p></blockquote> <p>在第一个 master 节点完成以下安装配置</p> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment">## 安装 haproxy 和 keepalived</span>
+yum <span class="token function">install</span> -y haproxy keepalived
+
+<span class="token comment">## 配置 haproxy</span>
+<span class="token function">cat</span> <span class="token operator">&lt;&lt;</span> EOF <span class="token operator">&gt;</span> /etc/haproxy/haproxy.cfg
+global
+    log /dev/log local0
+    <span class="token function">chroot</span> /var/lib/haproxy
+    user haproxy
+    group haproxy
+
+defaults
+    log global
+    <span class="token function">timeout</span> connect         10s
+    <span class="token function">timeout</span> client          1m
+    <span class="token function">timeout</span> server          1m
+
+frontend k8s-api
+  bind *:443
+  mode tcp
+  option tcplog
+  default_backend k8s-api
+
+backend k8s-api
+  mode tcp
+  option tcplog
+  option tcp-check
+  balance roundrobin
+  default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100
+  server k8s-api-1 172.17.8.101:6443 check
+  server k8s-api-2 172.17.8.102:6443 check
+  server k8s-api-3 172.17.8.103:6443 check
+EOF
+
+<span class="token comment">## 配置 keepalived</span>
+yum <span class="token function">install</span> -y psmisc
+<span class="token function">cat</span> <span class="token operator">&lt;&lt;</span> EOF <span class="token operator">&gt;</span> /etc/keepalived/keepalived.conf
+vrrp_script haproxy-check <span class="token punctuation">{</span>
+    script <span class="token string">&quot;killall -0 haproxy&quot;</span>
+    interval 2
+    weight 20
+<span class="token punctuation">}</span>
+
+vrrp_instance haproxy-vip <span class="token punctuation">{</span>
+    state BACKUP
+    priority 101
+    interface eth1
+    virtual_router_id 100
+    advert_int 3
+
+    virtual_ipaddress <span class="token punctuation">{</span>
+	172.17.8.100
+    <span class="token punctuation">}</span>
+
+    track_script <span class="token punctuation">{</span>
+        haproxy-check weight 20
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+EOF
+
+<span class="token comment">## 启动服务</span>
+systemctl start haproxy <span class="token operator">&amp;&amp;</span> systemctl <span class="token function">enable</span> haproxy
+systemctl start keepalived <span class="token operator">&amp;&amp;</span> systemctl <span class="token function">enable</span> keepalived
+</code></pre></div><p>剩余 master 节点安装 haproxy + keepalived 按照上述方法配置，其中只需要修改 keepalived 中的 <code>priority</code> 优先级（值越大优先级越高）</p> <h2 id="创建初始-master"><a href="#创建初始-master" aria-hidden="true" class="header-anchor">#</a> 创建初始 Master</h2> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment">## 生成 kubeadm 配置</span>
+<span class="token function">cat</span> <span class="token operator">&lt;&lt;</span> EOF <span class="token operator">&gt;</span> kubeadm.yml
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: ClusterConfiguration
+kubernetesVersion: v1.13.1
+imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers
+apiServer:
+  certSANs:
+  - <span class="token string">&quot;172.17.8.100&quot;</span>
+controlPlaneEndpoint: <span class="token string">&quot;172.17.8.100:443&quot;</span>
+networking:
+  podSubnet: 10.244.0.0/16
+  serviceSubnet: 10.96.0.0/12
+---
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: 172.17.8.101
+EOF
+
+<span class="token comment">## 初始化第一个 Master</span>
+kubeadm init --config kubeadm.yml
+
+<span class="token comment">## 按照上一步输出设置 kubectl 配置</span>
+<span class="token function">mkdir</span> -p <span class="token variable">$HOME</span>/.kube
+<span class="token function">cp</span> -i /etc/kubernetes/admin.conf <span class="token variable">$HOME</span>/.kube/config
+<span class="token function">chown</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> -u<span class="token variable">)</span></span><span class="token keyword">:</span><span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> -g<span class="token variable">)</span></span> <span class="token variable">$HOME</span>/.kube/config
+
+<span class="token comment">## 记录下 kubeadm init 输出最后一部分用于之后其它节点加入集群，例如：</span>
+<span class="token function">cat</span> <span class="token operator">&lt;&lt;</span> EOF <span class="token operator">&gt;</span> kubeadm-join.record
+kubeadm <span class="token function">join</span> 172.17.8.100:443 --token xcja08.ix7lv4e2yve5y2xx --discovery-token-ca-cert-hash sha256:d16fc0f3ab2f0720be9516bd79537d5119110bc894332b6a5e070d59e5e5ea80
+EOF
+</code></pre></div><h2 id="安装-pod-网络"><a href="#安装-pod-网络" aria-hidden="true" class="header-anchor">#</a> 安装 pod 网络</h2> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token function">wget</span> https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+<span class="token function">sed</span> -i <span class="token string">'s/vxlan/host-gw/'</span> kube-flannel.yml
+kubectl apply -f kube-flannel.yml
+
+<span class="token comment">## 如果内网连接的网口不是第一个，则需要在 command 的 args 中通过 `--iface` 指定网口, 例如:</span>
+command:
+- /opt/bin/flanneld
+args:
+- --ip-masq
+- --kube-subnet-mgr
+- --iface
+- eth1
+</code></pre></div><h2 id="加入剩余-master-节点"><a href="#加入剩余-master-节点" aria-hidden="true" class="header-anchor">#</a> 加入剩余 Master 节点</h2> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment">## 从第一个 Master 拷贝证书文件到其它 Master 节点</span>
+<span class="token function">cat</span> <span class="token operator">&lt;&lt;</span> <span class="token string">&quot;EOF&quot;</span> <span class="token operator">&gt;</span> copy-cert.sh
+masters<span class="token operator">=</span><span class="token string">&quot;172.17.8.102 172.17.8.103&quot;</span>
+<span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token variable">$masters</span><span class="token punctuation">;</span> <span class="token keyword">do</span>
+    <span class="token function">ssh</span> <span class="token variable">$i</span> <span class="token string">&quot;mkdir -p /etc/kubernetes/pki/etcd&quot;</span>
+    <span class="token function">scp</span> /etc/kubernetes/pki/ca.*  <span class="token variable">$i</span>:/etc/kubernetes/pki
+    <span class="token function">scp</span> /etc/kubernetes/pki/sa.*  <span class="token variable">$i</span>:/etc/kubernetes/pki
+    <span class="token function">scp</span> /etc/kubernetes/pki/front-proxy-ca.*  <span class="token variable">$i</span>:/etc/kubernetes/pki
+    <span class="token function">ssh</span> <span class="token variable">$i</span> <span class="token string">&quot;mkdir -p /etc/kubernetes/pki/etcd&quot;</span>
+    <span class="token function">scp</span> /etc/kubernetes/pki/etcd/ca.* <span class="token variable">$i</span>:/etc/kubernetes/pki/etcd
+    <span class="token function">scp</span> /etc/kubernetes/admin.conf <span class="token variable">$i</span>:/etc/kubernetes/pki
+<span class="token keyword">done</span>
+EOF
+<span class="token function">bash</span> copy-cert.sh
+
+<span class="token comment">## 依次在剩余 Master 节点执行 kubeadm-join.record 记录命令，额外加上参数 --experimental-control-plane 和 --apiserver-advertise-address。例如：</span>
+kubeadm <span class="token function">join</span> 172.17.8.100:443 --token xcja08.ix7lv4e2yve5y2xx --discovery-token-ca-cert-hash sha256:d16fc0f3ab2f0720be9516bd79537d5119110bc894332b6a5e070d59e5e5ea80 --experimental-control-plane --apiserver-advertise-address 172.17.8.102
+
+<span class="token comment">## 查看节点状态</span>
+kubectl get nodes
+</code></pre></div><h2 id="加入-worker-节点"><a href="#加入-worker-节点" aria-hidden="true" class="header-anchor">#</a> 加入 Worker 节点</h2> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment">## 加入 Worker 节点到集群中</span>
+kubeadm <span class="token function">join</span> --token <span class="token operator">&lt;</span>token<span class="token operator">&gt;</span> <span class="token operator">&lt;</span>master-ip<span class="token operator">&gt;</span>:<span class="token operator">&lt;</span>master-port<span class="token operator">&gt;</span> --discovery-token-ca-cert-hash sha256:<span class="token operator">&lt;</span>hash<span class="token operator">&gt;</span>
+
+<span class="token comment">## 例如，直接在 Worker 节点执行 kubeadm init 输出命令</span>
+kubeadm <span class="token function">join</span> 172.17.8.100:443 --token xcja08.ix7lv4e2yve5y2xx --discovery-token-ca-cert-hash sha256:d16fc0f3ab2f0720be9516bd79537d5119110bc894332b6a5e070d59e5e5ea80
+
+<span class="token comment">## 如果 Token 过期，可以重新生成</span>
+kubeadm token create
+kubeadm token list
+<span class="token comment">## 获取 --discovery-token-ca-cert-hash 的值</span>
+openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt <span class="token operator">|</span> openssl rsa -pubin -outform der 2<span class="token operator">&gt;</span>/dev/null <span class="token operator">|</span> \
+   openssl dgst -sha256 -hex <span class="token operator">|</span> <span class="token function">sed</span> <span class="token string">'s/^.* //'</span>
+</code></pre></div><h2 id="重置集群"><a href="#重置集群" aria-hidden="true" class="header-anchor">#</a> 重置集群</h2> <blockquote><p>移除 Master 节点同下</p></blockquote> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment">## 移除 Worker 节点</span>
+kubectl drain <span class="token operator">&lt;</span>node name<span class="token operator">&gt;</span> --delete-local-data --force --ignore-daemonsets
+kubectl delete node <span class="token operator">&lt;</span>node name<span class="token operator">&gt;</span>
+
+<span class="token comment">## 在 Worker 上执行重置</span>
+kubeadm reset
+iptables -F <span class="token operator">&amp;&amp;</span> iptables -t nat -F <span class="token operator">&amp;&amp;</span> iptables -t mangle -F <span class="token operator">&amp;&amp;</span> iptables -X
+</code></pre></div><h2 id="参考"><a href="#参考" aria-hidden="true" class="header-anchor">#</a> 参考</h2> <ul><li>https://kubernetes.io/docs/setup/independent/install-kubeadm/</li> <li>https://prefetch.net/blog/2018/02/20/getting-the-flannel-host-gw-working-with-kubernetes/</li></ul></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.a6fc3afd.js" defer></script><script src="/assets/js/2.49a26912.js" defer></script><script src="/assets/js/7.94a4b1d0.js" defer></script>
+  </body>
+</html>
